@@ -1,15 +1,15 @@
 module Tests exposing (all)
 
-import Test exposing (..)
 import Expect
 import Fuzz
-import String
+import InternalTests
 import Math.Matrix4 as M4
 import Math.Vector3 as V3
-import Quaternion as Qn exposing (..)
 import QnExpect as Expect exposing (..)
 import QnFuzz as Fuzz exposing (..)
-import InternalTests
+import Quaternion as Qn exposing (..)
+import String
+import Test exposing (..)
 
 
 all : Test
@@ -53,63 +53,63 @@ all =
                             ( yaw, pitch, roll ) =
                                 (fromYawPitchRoll >> toYawPitchRoll) ( 0, 0, 0 )
                         in
-                            floatEqual 0 yaw
+                        floatEqual 0 yaw
                 , test "(fromYawPitchRoll >> toYawPitchRoll) (0, 0, 0) pitch" <|
                     \() ->
                         let
                             ( yaw, pitch, roll ) =
                                 (fromYawPitchRoll >> toYawPitchRoll) ( 0, 0, 0 )
                         in
-                            floatEqual 0 pitch
+                        floatEqual 0 pitch
                 , test "(fromYawPitchRoll >> toYawPitchRoll) (0, 0, 0) roll" <|
                     \() ->
                         let
                             ( yaw, pitch, roll ) =
                                 (fromYawPitchRoll >> toYawPitchRoll) ( 0, 0, 0 )
                         in
-                            floatEqual 0 roll
+                        floatEqual 0 roll
                 , test "(fromYawPitchRoll >> toYawPitchRoll) ((pi/4), (pi/4), (pi/4)) yaw" <|
                     \() ->
                         let
                             ( yaw, pitch, roll ) =
-                                (fromYawPitchRoll >> toYawPitchRoll) ( (pi / 4), (pi / 4), (pi / 4) )
+                                (fromYawPitchRoll >> toYawPitchRoll) ( pi / 4, pi / 4, pi / 4 )
                         in
-                            floatEqual (pi / 4) yaw
+                        floatEqual (pi / 4) yaw
                 , test "(fromYawPitchRoll >> toYawPitchRoll) ((pi/4), (pi/4), (pi/4)) pitch" <|
                     \() ->
                         let
                             ( yaw, pitch, roll ) =
-                                (fromYawPitchRoll >> toYawPitchRoll) ( (pi / 4), (pi / 4), (pi / 4) )
+                                (fromYawPitchRoll >> toYawPitchRoll) ( pi / 4, pi / 4, pi / 4 )
                         in
-                            floatEqual (pi / 4) pitch
+                        floatEqual (pi / 4) pitch
                 , test "(fromYawPitchRoll >> toYawPitchRoll) ((pi/4), (pi/4), (pi/4)) roll" <|
                     \() ->
                         let
                             ( yaw, pitch, roll ) =
-                                (fromYawPitchRoll >> toYawPitchRoll) ( (pi / 4), (pi / 4), (pi / 4) )
+                                (fromYawPitchRoll >> toYawPitchRoll) ( pi / 4, pi / 4, pi / 4 )
                         in
-                            floatEqual (pi / 4) roll
+                        floatEqual (pi / 4) roll
                 , fuzz Fuzz.yawPitchRoll "(fromYawPitchRoll >> toYawPitchRoll) yaw " <|
                     \( yaw, pitch, roll ) ->
                         let
                             ( yaw_, pitch_, roll_ ) =
                                 (fromYawPitchRoll >> toYawPitchRoll) ( yaw, pitch, roll )
                         in
-                            angleEqual yaw yaw_
+                        angleEqual yaw yaw_
                 , fuzz Fuzz.yawPitchRoll "(fromYawPitchRoll >> toYawPitchRoll) pitch " <|
                     \( yaw, pitch, roll ) ->
                         let
                             ( yaw_, pitch_, roll_ ) =
                                 (fromYawPitchRoll >> toYawPitchRoll) ( yaw, pitch, roll )
                         in
-                            angleEqual pitch pitch_
+                        angleEqual pitch pitch_
                 , fuzz Fuzz.yawPitchRoll "(fromYawPitchRoll >> toYawPitchRoll) roll " <|
                     \( yaw, pitch, roll ) ->
                         let
                             ( yaw_, pitch_, roll_ ) =
                                 (fromYawPitchRoll >> toYawPitchRoll) ( yaw, pitch, roll )
                         in
-                            angleEqual roll roll_
+                        angleEqual roll roll_
                 ]
 
         testAngleAxisYawPitchRoll : Test
@@ -130,13 +130,12 @@ all =
                     \q v -> M4.transform (Qn.toMat4 q) v |> vec3Equal (Qn.rotate q v)
                 ]
     in
-        describe "Quaternion Test Suite" <|
-            [ InternalTests.all
-            , testFromTo
-            , testAngleAxis
-            , testRotation
-            , testYawPitchRoll
-            , testAngleAxisYawPitchRoll
-
-            , testMatrix4Conversion
-            ]
+    describe "Quaternion Test Suite" <|
+        [ InternalTests.all
+        , testFromTo
+        , testAngleAxis
+        , testRotation
+        , testYawPitchRoll
+        , testAngleAxisYawPitchRoll
+        , testMatrix4Conversion
+        ]

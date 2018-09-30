@@ -1,4 +1,11 @@
-module Quaternion exposing (..)
+module Quaternion exposing
+    ( Quaternion
+    , unit, fromVec3, fromTo
+    , fromAngleAxis, getAngle, getAxis
+    , negate, conjugate, multiply, rotate, slerp
+    , fromYawPitchRoll, toYawPitchRoll
+    , toMat4
+    )
 
 {-| Quaternions
 
@@ -37,9 +44,9 @@ To use arbitrary quaternions, import Internal.Quaternion.
 
 -}
 
-import Quaternion.Internal as Internal
 import Math.Matrix4 as M4
 import Math.Vector3 as V3 exposing (Vec3, vec3)
+import Quaternion.Internal as Internal
 
 
 {-| Quaternion type
@@ -106,7 +113,7 @@ fromAngleAxis =
 
 
 {-| Angle of rotation.
-Returns angle in radians, in the range [0, 2*pi)
+Returns angle in radians, in the range [0, 2\*pi)
 -}
 getAngle : Quaternion -> Float
 getAngle =
@@ -123,7 +130,7 @@ getAxis =
 {-| Construction a unit quaternion from Tait-Bryan angles representing
 (yaw, pitch, roll)
 
-<https://en.wikipedia.org/wiki/Euler_angles#Tait.E2.80.93Bryan_angles>
+[https://en.wikipedia.org/wiki/Euler\_angles#Tait.E2.80.93Bryan\_angles](https://en.wikipedia.org/wiki/Euler_angles#Tait.E2.80.93Bryan_angles)
 
 -}
 fromYawPitchRoll : ( Float, Float, Float ) -> Quaternion
@@ -146,7 +153,7 @@ toMat4 =
 
 
 {-| Spherical linear interpolation
- -}
+-}
 slerp : Float -> Quaternion -> Quaternion -> Quaternion
 slerp =
     Internal.slerp

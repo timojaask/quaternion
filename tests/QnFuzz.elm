@@ -1,25 +1,23 @@
-module QnFuzz
-    exposing
-        ( quaternion
-        , unitQuaternion
-        , nonZeroQuaternion
-        , rotationQuaternion
-        , angle
-        , vec3
-        , nonZeroVec3
-        , unitVec3
-        , floatTuple3
-        , floatTuple4
-        , floatRecord4
-        , scalarVector
-        , yawPitchRoll
-        )
+module QnFuzz exposing
+    ( angle
+    , floatRecord4
+    , floatTuple3
+    , floatTuple4
+    , nonZeroQuaternion
+    , nonZeroVec3
+    , quaternion
+    , rotationQuaternion
+    , scalarVector
+    , unitQuaternion
+    , unitVec3
+    , vec3
+    , yawPitchRoll
+    )
 
-import Fuzz exposing (Fuzzer, float, floatRange)
-import Fuzz exposing (map, andThen, constant)
-import Quaternion.Internal as Qn exposing (Quaternion)
+import Fuzz exposing (Fuzzer, andThen, constant, float, floatRange, map)
 import Math.Vector3 as V3 exposing (Vec3)
 import Math.Vector4 as V4
+import Quaternion.Internal as Qn exposing (Quaternion)
 
 
 quaternion : Fuzzer Quaternion
@@ -130,7 +128,7 @@ notVertical ( yaw, pitch, roll ) =
         q3 =
             sYaw * cRoll * cPitch - cYaw * sRoll * sPitch
     in
-        (abs (q2 * q2 + q3 * q3) <= 0.499)
+    abs (q2 * q2 + q3 * q3) <= 0.499
 
 
 
@@ -177,12 +175,14 @@ conditional : { retries : Int, fallback : a -> a, condition : a -> Bool } -> Fuz
 conditional { retries, fallback, condition } fuzzer =
     if retries <= 0 then
         map fallback fuzzer
+
     else
         fuzzer
             |> andThen
                 (\val ->
                     if condition val then
                         constant val
+
                     else
-                        conditional { retries = (retries - 1), fallback = fallback, condition = condition } fuzzer
+                        conditional { retries = retries - 1, fallback = fallback, condition = condition } fuzzer
                 )

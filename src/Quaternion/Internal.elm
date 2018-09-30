@@ -1,4 +1,12 @@
-module Quaternion.Internal exposing (..)
+module Quaternion.Internal exposing
+    ( Quaternion
+    , unit, quaternion, fromScalar, fromVec3, fromScalarVector, fromTo
+    , getScalar, getI, getJ, getK, setScalar, setI, setJ, setK
+    , length, lengthSquared, normalize, negate, scale, add, sub, conjugate, hamilton, vmult, rotateV, multv, rotateQ, slerp
+    , fromAngleAxis, getAngle, getAxis
+    , fromYawPitchRoll, toYawPitchRoll, nearVertical
+    , toScalarVector, toVec3, toMat4
+    )
 
 {-| Quaternions
 
@@ -111,7 +119,7 @@ fromVec3 v =
         { x, y, z } =
             V3.toRecord v
     in
-        vec4 x y z 0
+    vec4 x y z 0
 
 
 {-| Construct a Quaternion from its representation as a scalar and a vector
@@ -122,7 +130,7 @@ fromScalarVector ( s, v ) =
         { x, y, z } =
             V3.toRecord v
     in
-        quaternion x y z s
+    quaternion x y z s
 
 
 {-| Extract the scalar component of a quaternion.
@@ -189,7 +197,7 @@ toScalarVector q =
         { x, y, z, w } =
             V4.toRecord q
     in
-        ( w, vec3 x y z )
+    ( w, vec3 x y z )
 
 
 {-| Extract the axis of rotation
@@ -200,7 +208,7 @@ toVec3 q =
         { x, y, z, w } =
             V4.toRecord q
     in
-        vec3 x y z
+    vec3 x y z
 
 
 {-| The length of the given quaternion: |a|
@@ -210,7 +218,7 @@ length =
     V4.length
 
 
-{-| The square of the length of the given quaternion: |a| * |a|
+{-| The square of the length of the given quaternion: |a| \* |a|
 -}
 lengthSquared : Quaternion -> Float
 lengthSquared =
@@ -231,7 +239,7 @@ negate =
     V4.negate
 
 
-{-| Multiply the quaternion by a scalar: s * q
+{-| Multiply the quaternion by a scalar: s \* q
 -}
 scale : Float -> Quaternion -> Quaternion
 scale =
@@ -260,7 +268,7 @@ conjugate q =
         { x, y, z, w } =
             V4.toRecord q
     in
-        V4.fromTuple ( -x, -y, -z, w )
+    V4.fromTuple ( -x, -y, -z, w )
 
 
 {-| Hamilton product
@@ -274,11 +282,11 @@ hamilton q1 q2 =
         ( b2, c2, d2, a2 ) =
             V4.toTuple q2
     in
-        quaternion
-            (a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2)
-            (a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2)
-            (a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2)
-            (a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2)
+    quaternion
+        (a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2)
+        (a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2)
+        (a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2)
+        (a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2)
 
 
 
@@ -343,14 +351,16 @@ fromTo u v =
                     w =
                         if abs (V3.getX u) > abs (V3.getZ u) then
                             vec3 -(V3.getY u) (V3.getX u) 0
+
                         else
                             vec3 0 -(V3.getZ u) (V3.getY u)
                 in
-                    ( 0, w )
+                ( 0, w )
+
             else
                 ( real_part0, V3.cross u v )
     in
-        normalize <| fromScalarVector ( real_part, w )
+    normalize <| fromScalarVector ( real_part, w )
 
 
 {-| Construction from angle, axis.
@@ -371,11 +381,11 @@ fromAngleAxis angle axis =
         s =
             sin theta
     in
-        quaternion (x * s) (y * s) (z * s) c
+    quaternion (x * s) (y * s) (z * s) c
 
 
 {-| Angle of rotation.
-Returns angle in radians, in the range [0, 2*pi)
+Returns angle in radians, in the range [0, 2\*pi)
 -}
 getAngle : Quaternion -> Float
 getAngle q =
@@ -392,7 +402,7 @@ getAxis q =
 {-| Construction a unit quaternion from Tait-Bryan angles representing
 (yaw, pitch, roll)
 
-<https://en.wikipedia.org/wiki/Euler_angles#Tait.E2.80.93Bryan_angles>
+[https://en.wikipedia.org/wiki/Euler\_angles#Tait.E2.80.93Bryan\_angles](https://en.wikipedia.org/wiki/Euler_angles#Tait.E2.80.93Bryan_angles)
 
 -}
 fromYawPitchRoll : ( Float, Float, Float ) -> Quaternion
@@ -428,7 +438,7 @@ fromYawPitchRoll ( yaw, pitch, roll ) =
         q3 =
             sYaw * cRoll * cPitch - cYaw * sRoll * sPitch
     in
-        quaternion q1 q2 q3 q0
+    quaternion q1 q2 q3 q0
 
 
 {-| Convert a unit quaternion to Yaw, Pitch, Roll
@@ -447,12 +457,14 @@ toYawPitchRoll q =
             q2q2 + q3 * q3
 
         ( yaw, pitch, roll ) =
-            if (t > 0.499) then
+            if t > 0.499 then
                 -- Singularity at north pole
                 ( 2 * atan2 q1 q0, pi / 2, 0 )
-            else if (t < -0.499) then
+
+            else if t < -0.499 then
                 -- Singularity at south pole
                 ( -2 * atan2 q1 q0, -pi / 2, 0 )
+
             else
                 let
                     r0 =
@@ -470,12 +482,14 @@ toYawPitchRoll q =
                     t2_1 =
                         if t2_0 > 1.0 then
                             1.0
+
                         else
                             t2_0
 
                     t2 =
                         if t2_1 < -1.0 then
                             -1.0
+
                         else
                             t2_1
 
@@ -491,9 +505,9 @@ toYawPitchRoll q =
                     yaw_ =
                         atan2 t3 t4
                 in
-                    ( yaw_, pitch_, roll_ )
+                ( yaw_, pitch_, roll_ )
     in
-        ( yaw, pitch, roll )
+    ( yaw, pitch, roll )
 
 
 {-| Is the quaternion near vertical, either up or down?
@@ -504,7 +518,7 @@ nearVertical q =
         ( q0, q1, q2, q3 ) =
             V4.toTuple q
     in
-        (abs (q2 * q2 + q3 * q3) > 0.499)
+    abs (q2 * q2 + q3 * q3) > 0.499
 
 
 {-| Convert to a Mat4
@@ -515,37 +529,41 @@ toMat4 q =
         ( x, y, z, w ) =
             ( getI q, getJ q, getK q, getScalar q )
     in
-        M4.fromRecord
-            { m11 = 1 - 2 * y * y - 2 * z * z
-            , m12 = 2 * x * y - 2 * w * z
-            , m13 = 2 * x * z + 2 * w * y
-            , m14 = 0
-            , m21 = 2 * x * y + 2 * w * z
-            , m22 = 1 - 2 * x * x - 2 * z * z
-            , m23 = 2 * y * z - 2 * w * x
-            , m24 = 0
-            , m31 = 2 * x * z - 2 * w * y
-            , m32 = 2 * y * z + 2 * w * x
-            , m33 = 1 - 2 * x * x - 2 * y * y
-            , m34 = 0
-            , m41 = 0
-            , m42 = 0
-            , m43 = 0
-            , m44 = 1
-            }
+    M4.fromRecord
+        { m11 = 1 - 2 * y * y - 2 * z * z
+        , m12 = 2 * x * y - 2 * w * z
+        , m13 = 2 * x * z + 2 * w * y
+        , m14 = 0
+        , m21 = 2 * x * y + 2 * w * z
+        , m22 = 1 - 2 * x * x - 2 * z * z
+        , m23 = 2 * y * z - 2 * w * x
+        , m24 = 0
+        , m31 = 2 * x * z - 2 * w * y
+        , m32 = 2 * y * z + 2 * w * x
+        , m33 = 1 - 2 * x * x - 2 * y * y
+        , m34 = 0
+        , m41 = 0
+        , m42 = 0
+        , m43 = 0
+        , m44 = 1
+        }
 
 
 {-| Spherical linear interpolation
-http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
- -}
+<http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm>
+-}
 slerp : Float -> Quaternion -> Quaternion -> Quaternion
 slerp t qa qb =
     let
         -- Calculate angle between them.
-        cosHalfTheta = V4.dot qa qb
+        cosHalfTheta =
+            V4.dot qa qb
 
-        halfTheta = acos cosHalfTheta
-        sinHalfTheta = sqrt (1.0 - cosHalfTheta*cosHalfTheta)
+        halfTheta =
+            acos cosHalfTheta
+
+        sinHalfTheta =
+            sqrt (1.0 - cosHalfTheta * cosHalfTheta)
 
         ( aw, ax, ay, az ) =
             V4.toTuple qa
@@ -553,27 +571,44 @@ slerp t qa qb =
         ( bw, bx, by, bz ) =
             V4.toTuple qb
 
-        hw = aw * 0.5 + bw * 0.5
-        hx = ax * 0.5 + bx * 0.5
-        hy = ay * 0.5 + by * 0.5
-        hz = az * 0.5 + bz * 0.5
+        hw =
+            aw * 0.5 + bw * 0.5
 
-        ratioA = sin((1 - t) * halfTheta) / sinHalfTheta
-        ratioB = sin(t * halfTheta) / sinHalfTheta
+        hx =
+            ax * 0.5 + bx * 0.5
 
-        mw = aw * ratioA + bw * ratioB
-        mx = ax * ratioA + bx * ratioB
-        my = ay * ratioA + by * ratioB
-        mz = az * ratioA + bz * ratioB
+        hy =
+            ay * 0.5 + by * 0.5
+
+        hz =
+            az * 0.5 + bz * 0.5
+
+        ratioA =
+            sin ((1 - t) * halfTheta) / sinHalfTheta
+
+        ratioB =
+            sin (t * halfTheta) / sinHalfTheta
+
+        mw =
+            aw * ratioA + bw * ratioB
+
+        mx =
+            ax * ratioA + bx * ratioB
+
+        my =
+            ay * ratioA + by * ratioB
+
+        mz =
+            az * ratioA + bz * ratioB
     in
-        -- if qa=qb or qa=-qb then theta = 0 and we can return qa
-        if abs cosHalfTheta >= 1.0 then
-            qa
-
+    -- if qa=qb or qa=-qb then theta = 0 and we can return qa
+    if abs cosHalfTheta >= 1.0 then
+        qa
         -- if theta = 180 degrees then result is not fully defined
         -- we could rotate around any axis normal to qa or qb
-        else if abs sinHalfTheta  < 0.001 then
-            quaternion hw hx hy hz
 
-        else
-            quaternion mw mx my mz
+    else if abs sinHalfTheta < 0.001 then
+        quaternion hw hx hy hz
+
+    else
+        quaternion mw mx my mz

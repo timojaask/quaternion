@@ -1,16 +1,16 @@
-module QnExpect
-    exposing
-        ( all_
-        , floatEqual
-        , angleEqual
-        , qnEqual
-        , vec3Equal
-        , vec3Collinear
-        )
+module QnExpect exposing
+    ( all_
+    , angleEqual
+    , floatEqual
+    , qnEqual
+    , vec3Collinear
+    , vec3Equal
+    )
 
 import Expect exposing (Expectation)
-import Quaternion.Internal as Qn exposing (Quaternion, getScalar, getI, getJ, getK)
 import Math.Vector3 as V3 exposing (Vec3, getX, getY, getZ)
+import Quaternion.Internal as Qn exposing (Quaternion, getI, getJ, getK, getScalar)
+
 
 
 {- | A variant of Expect.all that does not take an argument.
@@ -27,12 +27,15 @@ all_ es =
 
 floatRelativeTolerance : Float -> Float -> Float -> Bool
 floatRelativeTolerance tolerance a b =
-    if (a == b || (isNaN a && isNaN b)) then
+    if a == b || (isNaN a && isNaN b) then
         True
-    else if (abs a < 10 * tolerance) then
+
+    else if abs a < 10 * tolerance then
         abs (a - b) < (10 * tolerance)
-    else if (abs b < 10 * tolerance) then
+
+    else if abs b < 10 * tolerance then
         abs (a - b) < (10 * tolerance)
+
     else
         abs ((a - b) / a) < tolerance
 
@@ -41,6 +44,7 @@ equateWith : (a -> a -> String) -> (a -> a -> Bool) -> a -> a -> Expectation
 equateWith failString f a b =
     if f a b then
         Expect.pass
+
     else
         Expect.fail (failString a b)
 
@@ -56,9 +60,9 @@ floatEqual =
         tolerance =
             0.01
     in
-        equateWith
-            (renderResult ("floats not within tolerance " ++ toString tolerance))
-            (floatRelativeTolerance tolerance)
+    equateWith
+        (renderResult ("floats not within tolerance " ++ toString tolerance))
+        (floatRelativeTolerance tolerance)
 
 
 angleRelativeTolerance : Float -> Float -> Float -> Bool
@@ -73,9 +77,9 @@ angleEqual =
         tolerance =
             0.1
     in
-        equateWith
-            (renderResult ("angles not within tolerance " ++ toString tolerance))
-            (angleRelativeTolerance tolerance)
+    equateWith
+        (renderResult ("angles not within tolerance " ++ toString tolerance))
+        (angleRelativeTolerance tolerance)
 
 
 qnComponentRelativeTolerance : Float -> Quaternion -> Quaternion -> Bool
@@ -92,9 +96,9 @@ qnEqual =
         tolerance =
             0.0001
     in
-        equateWith
-            (renderResult ("Components not within tolerance " ++ toString tolerance))
-            (qnComponentRelativeTolerance tolerance)
+    equateWith
+        (renderResult ("Components not within tolerance " ++ toString tolerance))
+        (qnComponentRelativeTolerance tolerance)
 
 
 vec3ComponentRelativeTolerance : Float -> Vec3 -> Vec3 -> Bool
@@ -110,9 +114,9 @@ vec3Equal =
         tolerance =
             0.0001
     in
-        equateWith
-            (renderResult ("Components not within tolerance " ++ toString tolerance))
-            (vec3ComponentRelativeTolerance tolerance)
+    equateWith
+        (renderResult ("Components not within tolerance " ++ toString tolerance))
+        (vec3ComponentRelativeTolerance tolerance)
 
 
 vec3Collinear : Vec3 -> Vec3 -> Expectation
