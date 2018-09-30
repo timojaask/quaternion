@@ -1,0 +1,18 @@
+{
+  "type": "package",
+  "name": "kfish/quaternion",
+  "summary": "Fast 3D rotation and orientation",
+  "license": "MIT",
+  "version": "2.1.0",
+  "exposed-modules": [
+    "Quaternion",
+    "Quaternion.Internal"
+  ],
+  "elm-version": "0.19.0 <= v < 0.20.0",
+  "dependencies": {
+    "elm/core": "1.0.0 <= v < 2.0.0",
+    "elm-explorations/linear-algebra": "1.0.3 <= v < 2.0.0",
+    "elm-explorations/test": "1.1.0 <= v < 2.0.0"
+  },
+  "test-dependencies": {}
+}
